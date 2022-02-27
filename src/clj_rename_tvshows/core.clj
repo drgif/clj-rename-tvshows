@@ -18,9 +18,11 @@
   "All the logic in one function"
   [basefolder]
   (let [shows (parse-dir-contents {} :show basefolder)
-        seasons (map #(parse-dir-contents % :season (:path (:show %))) shows)]
-    seasons))
+        seasons (mapcat #(parse-dir-contents % :season (:path (:show %))) shows)
+        episodes (mapcat #(parse-dir-contents % :episode (:path (:season %))) seasons)]
+    episodes))
 
 (comment
   (run "./doc")
-  (run "./target"))
+  (run "./target")
+  (run "./examples"))

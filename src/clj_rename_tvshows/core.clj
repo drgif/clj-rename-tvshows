@@ -7,13 +7,20 @@
   [& args]
   (println "Hello, World!"))
 
+(defn- parse-dir-contents [m type dir]
+  (->> dir
+       (clojure.java.io/file)
+       (.listFiles)
+       (map (fn [file] (merge m {type {:name (.getName file)
+                                     :path (.getPath file)}})))))
+
 (defn- run
   "All the logic in one function"
   [basefolder]
-  (->> basefolder
-       (clojure.java.io/file)
-       (file-seq)
-       (map #(.getName %))))
+  (let [shows (parse-dir-contents {} :show basefolder)
+        seasons (map #(parse-dir-contents % :season (:path (:show %))) shows)]
+    seasons))
 
 (comment
-  (run "./doc"))
+  (run "./doc")
+  (run "./target"))

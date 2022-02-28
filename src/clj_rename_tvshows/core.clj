@@ -3,17 +3,23 @@
             [clojure.string :as str])
   (:gen-class))
 
-(defn- parse-dir-contents [m type dir]
+(defn- parse-dir-contents 
+  "Merges information about folder contents with the information of the parent folder"
+  [m type dir]
   (->> dir
        (io/file)
        (.listFiles)
        (map (fn [file] (merge m {type {:name (.getName file)
                                        :path (.getAbsolutePath file)}})))))
 
-(defn- extract-numbers [s]
+(defn- extract-numbers
+  "Strips all non-digit characters from a string"
+  [s]
   (apply str (filter #(Character/isDigit %) s)))
 
-(defn- new-filename [episode]
+(defn- new-filename 
+  "Returns the new filename"
+  [episode]
   (let [show-name (get-in episode [:show :name])
         season-x (str (extract-numbers (get-in episode [:season :name])) "x")
         episode-name (get-in episode [:episode :name])]
@@ -23,17 +29,21 @@
           season-x)
         episode-name)))
 
-(defn- new-filepath [episode]
+(defn- new-filepath 
+  "Returns the new absolute filepath"
+  [episode]
   (str/replace (get-in episode [:episode :path])
                (get-in episode [:episode :name])
                (new-filename episode)))
 
-(defn- rename-episode! [episode]
+(defn- rename-episode!
+  "Executes the actual renaming"
+  [episode]
   (.renameTo (io/file (get-in episode [:episode :path]))
              (io/file (new-filepath episode))))
 
 (defn- rename-episodes
-  "All the logic in one function"
+  "Main program logic"
   [basepath]
   (let [shows (parse-dir-contents {} :show basepath)
         seasons (mapcat #(parse-dir-contents % :season (:path (:show %))) shows)
@@ -41,7 +51,7 @@
     (run! rename-episode! episodes)))
 
 (defn- is-folder?
-  "Checks if a string corresponds to a relative or absolute path to a folder"
+  "Checks if a string corresponds to a (relative or absolute) path to a folder"
   [path]
   (->> path
        (io/file)

@@ -1,36 +1,51 @@
 # clj-rename-tvshows
 
-FIXME: description
+Traverses a directory structure containing TV Shows in the format:
+```
+basepath/
+|--- ALF/
+|    |--- Season 01/
+|    |    |--- 01 - Pilot.avi
+|    |    |--- 02 - The Second.avi
+|    |--- Season 02
+
+...
+```
+and adds the TV Show and season information to the respective media files like this:
+```
+basepath/
+|--- ALF/
+|    |--- Season 01/
+|    |    |--- ALF.01x01 - Pilot.avi
+|    |    |--- ALF.01x02 - The Second.avi
+|    |--- Season 02
+
+...
+```
+In this format, the files can be properly analyzed using [mnamer](https://github.com/jkwill87/mnamer).
 
 ## Installation
 
-Download from http://example.com/FIXME.
+Download from https://github.com/mwiederhold/clj-rename-tvshows.
 
 ## Usage
 
-FIXME: explanation
+Execute the jar with one argument consisting of the basepath to your TV Shows:
 
-    $ java -jar clj-rename-tvshows-0.1.0-standalone.jar [args]
+    $ java -jar clj-rename-tvshows-0.1.0-standalone.jar [basepath]
 
-## Options
-
-FIXME: listing of options this app accepts.
 
 ## Examples
 
-...
+    $ java -jar clj-rename-tvshows-0.1.0-standalone.jar /media/tvshows
 
-### Bugs
+## Bugs
 
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+This tool is not well-tested. Use at your own risk.
 
 ## License
 
-Copyright © 2022 FIXME
+Copyright © 2022 Michael Wiederhold
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at

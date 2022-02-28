@@ -3,11 +3,6 @@
             [clojure.string :as str])
   (:gen-class))
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
-
 (defn- parse-dir-contents [m type dir]
   (->> dir
        (io/file)
@@ -37,15 +32,37 @@
   (.renameTo (io/file (get-in episode [:episode :path]))
              (io/file (new-filepath episode))))
 
-(defn- run
+(defn- rename-episodes
   "All the logic in one function"
-  [basefolder]
-  (let [shows (parse-dir-contents {} :show basefolder)
+  [basepath]
+  (let [shows (parse-dir-contents {} :show basepath)
         seasons (mapcat #(parse-dir-contents % :season (:path (:show %))) shows)
         episodes (mapcat #(parse-dir-contents % :episode (:path (:season %))) seasons)]
     (run! rename-episode! episodes)))
 
+(defn- is-folder?
+  "Checks if a string corresponds to a relative or absolute path to a folder"
+  [path]
+  (->> path
+       (io/file)
+       (.isDirectory)))
+
+(defn -main
+  "Renames TV Show episodes in a folder hierarchy under basepath provided by first argument"
+  [& args]
+  (let [basepath (first args)]
+    (cond
+      (nil? basepath) (println "Please provide a basepath to TV Shows")
+      (not (is-folder? basepath)) (println (str basepath " is not a valid directory"))
+      :else (rename-episodes basepath))))
+
+
 (comment
-  (run "./doc")
-  (run "./target")
-  (run "./examples"))
+  (rename-episodes "./doc")
+  (rename-episodes "./target")
+  (rename-episodes "./examples")
+  (is-folder? "./doc")
+  (is-folder? "foo")
+  (-main)
+  (-main "foo")
+  (-main "examples"))
